@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+   <meta http-equiv="content-type"
+      content="text/html; charset=<% settings.charset %>">
+   <title>dot MULTI Cloud</title>
+</head>
+<body>
+   <div id="form">
+      <form action="/configuration" method="POST">
+         <label for="application">Application</label>
+         <input type="text" name="application" id="application" value="">
+         <label for="service">Service</label>
+         <input type="text" name="service" id="service" value="">
+         <label for="configuration">Configuration</label>
+         <textarea name="configuration" id="configuration"></textarea>
+         <input type="submit" name="submit" value="update">
+      </form>
+   </div>
+   <div id="list">
+      <ul>
+      <% FOR application = applications.keys %>
+         <li>
+            <p><% application %></p>
+            <ul>
+            <% FOR service = applications.$application %>
+               <li><% service %></li>
+            <% END %>
+            </ul>
+         </li>
+      <% END %>
+      </ul>
+   </div>
+</body>
+</html>
