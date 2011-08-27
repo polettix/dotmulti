@@ -40,6 +40,11 @@ sub https_base {
    return $base;
 }
 
+get '/public/password/:password' => sub {
+   content_type 'text/plain; charset=UTF8';
+   return md5_hex(params->{password});
+};
+
 any [ qw< head get post > ] => '/public/tohttps' => sub {
    redirect https_base();
 };
