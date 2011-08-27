@@ -22,6 +22,8 @@ WriteMakefile(
         'Redis' => 0,
         'Try::Tiny' => 0,
         'File::Slurp' => 0,
+        'MIME::Base64' => 0,
+        'Digest::MD5' => 0,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'whatever-*' },

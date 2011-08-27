@@ -9,67 +9,97 @@ use Dancer;
 use Dancer::Plugin::FlashNote qw< flash >;
 use File::Slurp qw< read_file >;
 use Redis;
+use MIME::Base64 qw< decode_base64 >;
+use Digest::MD5 qw< md5_hex >;
 
-sub _json {
-   content_type 'application/json; charset=utf-8';
-   return to_json({@_});
+before sub {
+   request->path_info('/public/tohttps')
+      unless lc(request()->header('x-forwarded-protocol')) eq 'https';
+};
+
+sub check_credentials {
+   my ($authorization) = @_;
+   return undef unless defined $authorization;
+   my ($encoded) = $authorization =~ /\A \s* Basic \s+ (\S+) \z/mxs
+      or return undef;
+   my ($username, $password) = split /:/, decode_base64($encoded), 2;
+   my $saved_password = password_for($username)
+      or return undef;
+   return $saved_password eq md5_hex($password);
 }
+
+before sub {
+   request->path_info('/unauthorized')
+      unless request->path_info() =~ m{\A /public/ }mxs
+         || check_credentials(request->header('authorization'));
+};
+
+sub https_base {
+   my $base = request()->base();
+   $base =~ s/\Ahttp:/https:/imxs;
+   return $base;
+}
+
+any [ qw< head get post > ] => '/public/tohttps' => sub {
+   redirect https_base();
+};
+
+get '/unauthorized' => sub {
+   header('WWW-Authenticate' => 'Basic realm="dot MULTI Cloud"');
+   status 401;
+   return 'Authorization Required';
+};
 
 get '/applications' => sub {
    return _json(applications => scalar(applications()));
 };
-get '/services/:application' => sub {
-   my $application = params->{application};
-   return _json(
-      application => $application,
-      services    => scalar(services($application))
-   );
+get '/configurations' => sub {
+   return _json(configuration_for(applications()));
 };
 get '/configuration/:application' => sub {
-   my $application = params->{application};
-   my @params      = $application;
-   if ($application =~ /(.*^) \. (.*)/mxs) {
-      @params = ($1, $2);
-   }
-   return _json(configuration_for(@params));
-};
-get '/configuration/:application/:service' => sub {
-   return _json(configuration_for(@{params()}{qw< application service >}));
+   return _json(configuration_for(params->{application}));
 };
 
 get '/' => \&get_index;
-
-post '/configuration' => sub {
-   my ($application, $service, $configuration) =
-     @{params()}{qw< application service configuration >};
-   configuration_for($application, $service, $configuration);
-   return get_index();   
+post '/' => sub {
+   my ($application, $configuration) =
+     @{params()}{qw< application configuration >};
+   set_configuration($application, $configuration);
+   redirect https_base();
 };
 
-
 sub get_index {
-   template 'index', {applications => scalar(full_applications())};
+   template 'index', {applications => scalar(applications()), https_base => https_base() };
 }
 
-sub get_dotcloud_config {
-   if (!defined $config) {
-      my $filename = shift || '/home/dotcloud/environment.json';
-      my $config_text = read_file($filename);
-      $config = from_json($config_text);    # from_json from Dancer!
-   }
-   return $config;
-} ## end sub get_dotcloud_config
+{
+   my $config;
+
+   sub get_dotcloud_config {
+      if (!defined $config) {
+         my $filename = shift || '/home/dotcloud/environment.json';
+         my $config_text = read_file($filename);
+         $config = from_json($config_text);    # from_json from Dancer!
+      }
+      return $config;
+   } ## end sub get_dotcloud_config
+}
 
 sub redis {
    my $config = get_dotcloud_config();
    my ($password, $hostname, $port) =
-     map { $config->{'DOTCLOUD_NOSQLDB_REDIS_' . $_} }
+     map { $config->{'DOTCLOUD_DATA_REDIS_' . $_} }
      qw< PASSWORD HOST PORT >;
 
    my $redis = Redis->new(server => "$hostname:$port");
    $redis->auth($password);
    return $redis;
 } ## end sub redis
+
+sub _json {
+   content_type 'application/json; charset=utf-8';
+   return to_json({@_});
+}
 
 sub _array {
    return @_ if wantarray();
@@ -85,32 +115,28 @@ sub applications {
    return _array(redis()->smembers('applications'));
 }
 
-sub full_applications {
-   return _hash(map {
-      $_ => scalar(services_for($_));
-   } applications());
-}
-
-sub services_for {
-   my ($application) = @_;
-   return _array(redis()->smembers("application:$application:services"));
+sub set_configuration {
+   my ($application, $configuration) = @_;
+   my $redis = redis();
+   $redis->set("application:$application:configuration",
+      $configuration);
+   $redis->sadd("applications", $application);
 }
 
 sub configuration_for {
-   my ($application, $service, $configuration) = @_;
    my $redis = redis();
-   if (defined $configuration) {
-      $redis->set("service:$application.$service:configuration",
-         $configuration);
-   }
-   my @services =
-      defined($service) ? ($service) : services_for($application);
-   return _hash(map {
-      my $name          = "$application.$_";
-      my $configuration = $redis->get("service:$name:configuration");
-      $name => $configuration;
-   } @services);
+   return _hash(
+      map {
+         $_ => $redis->get("application:$_:configuration");
+        } @_
+   );
 } ## end sub configuration_for
+
+sub password_for {
+   my ($username) = @_;
+   $username =~ s{[^\w-]+}{}gmxs;
+   return redis()->get("user:$username:password");
+}
 
 1;
 __END__

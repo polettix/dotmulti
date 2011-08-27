@@ -5,32 +5,61 @@
    <meta http-equiv="content-type"
       content="text/html; charset=<% settings.charset %>">
    <title>dot MULTI Cloud</title>
+   <style>
+<!--
+label, .submit { display: block }
+div#form, div#list {
+   float: left;
+   padding: 0.3em;
+   margin: 0.3em;
+}
+div#list {
+   border-right: 1px solid gray;
+}
+textarea {
+   width: 65em;
+   height: 20em;
+}
+ul, li, p {
+   margin: 0;
+   padding: 0;
+}
+li {
+   margin-left: 1em;
+}
+ul { 
+   list-style: none;
+}
+-->
+   </style>
 </head>
 <body>
+   <h1>dot MULTI Cloud</h1>
+   <div id="list">
+      <% IF applications.size() %>
+      <h2>Configurations</h2>
+      <ul>
+         <li>
+            <a href="/configurations">All Configurations</a>
+         </li>
+         <% FOR application = applications %>
+         <li>
+            <a href="/configuration/<% application %>"><% application %></a>
+         </li>
+         <% END %>
+      </ul>
+      <% END %>
+   </div>
    <div id="form">
-      <form action="/configuration" method="POST">
+      <h2>Add a configuration</h2>
+      <form action="<% https_base %>" method="POST">
          <label for="application">Application</label>
          <input type="text" name="application" id="application" value="">
-         <label for="service">Service</label>
-         <input type="text" name="service" id="service" value="">
          <label for="configuration">Configuration</label>
          <textarea name="configuration" id="configuration"></textarea>
-         <input type="submit" name="submit" value="update">
+         <input class="submit" type="submit" name="submit" value="update">
       </form>
    </div>
-   <div id="list">
-      <ul>
-      <% FOR application = applications.keys %>
-         <li>
-            <p><% application %></p>
-            <ul>
-            <% FOR service = applications.$application %>
-               <li><% service %></li>
-            <% END %>
-            </ul>
-         </li>
-      <% END %>
-      </ul>
-   </div>
+   <div style="clear: both">
 </body>
 </html>
