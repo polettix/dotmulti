@@ -1,5 +1,5 @@
 author: polettix
 baseurl: /dotmulti
-theme: jekyll-theme-minimal
+theme: jekyll-theme-hacker
 plugins:
   - jekyll-sitemap
