@@ -1,5 +1,6 @@
 author: polettix
-baseurl: http://github.polettix.it/dotmulti/
+baseurl: dotmulti/
+url: http://github.polettix.it
 theme: jekyll-theme-minimal
 plugins:
   - jekyll-sitemap
