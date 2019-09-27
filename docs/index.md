@@ -1,6 +1,6 @@
 ---
 title: Howdy
-layout: post
+layout: default
 ---
 
 # Howdy!
