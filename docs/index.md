@@ -3,8 +3,9 @@ title: Howdy!
 layout: default
 ---
 
+<ul>
 {% for post in site.posts %}	
-<h3><small>{{ post.date | date: "%B %e, %Y" }} <a href="http://mypage.github.com{{ post.url }}#disqus_thread"></a></small> - <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h3>	
+<li><small>[{{ post.date | date: "%Y-%m-%d" }} <a href="http://mypage.github.com{{ post.url }}#disqus_thread"></a></small>] <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></li>
 {% endfor %}
-
+</ul>
 {{ site.time | date_to_rfc822 }}
