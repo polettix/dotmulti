@@ -1,5 +1,5 @@
 author: polettix
-baseurl: dotmulti/
+permalink: /dotmulti/:year/:month/:day/:title
 url: http://github.polettix.it
 theme: jekyll-theme-minimal
 plugins:
