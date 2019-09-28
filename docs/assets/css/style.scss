@@ -2,7 +2,7 @@
 ---
 
 @import "{{ site.theme }}";
-@import "default_colors";
+// @import "default_colors";
 
 a:link {
     text-decoration: none;
@@ -37,10 +37,10 @@ a:active {
   }
 }
 
-header {
+footer {
   background: rgba(0, 0, 0, 0.1);
   width: 100%;
-  border-top: 1px dashed $conifer; //header;
+  border-top: 1px dashed $conifer; //footer;
   padding: 20px 0;
-  margin: 0 0 40px 0;
+  margin: 40px 0 0 0;
 }
