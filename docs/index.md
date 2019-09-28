@@ -10,4 +10,5 @@ layout: default
 <li><small>[{{ post.date | date: "%Y-%m-%d" }}]</small> <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></li>
 {% endfor %}
 </ul>
-{{ site.time | date_to_rfc822 }}
+
+<!-- {{ site.time | date_to_rfc822 }} -->
