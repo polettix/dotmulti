@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Welcome to Jekyll - Again"
+mathjax: true
 ---
 
 **Hello world**, this is my first Jekyll blog post.
