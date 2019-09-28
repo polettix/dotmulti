@@ -3,7 +3,7 @@ title: Howdy!
 layout: default
 ---
 
-<ul class=".single-before">
+<ul class="single-before">
 {% for post in site.posts %}	
 <li><small>[{{ post.date | date: "%Y-%m-%d" }} <a href="http://mypage.github.com{{ post.url }}#disqus_thread"></a></small>] <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></li>
 {% endfor %}
