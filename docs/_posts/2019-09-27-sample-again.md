@@ -4,7 +4,6 @@ title:  "Welcome to Jekyll - Again"
 mathjax: true
 ---
 
-Bump
 
 **Hello world**, this is my first Jekyll blog post.
 
@@ -12,7 +11,7 @@ I hope you like it!
 
 ## A long story short...
 
-This is \(x = 100 \Rightarrow x > 99\) some maths:
+This is $ x = 100 \Rightarrow x > 99 $ some maths:
 
 $$ \alpha = \sum_{i = 1}^{N} \frac1i $$
 
