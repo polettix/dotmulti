@@ -3,6 +3,8 @@ title: Howdy!
 layout: default
 ---
 
+# What to find here...
+
 <ul class="single-before">
 {% for post in site.posts %}	
 <li><small>[{{ post.date | date: "%Y-%m-%d" }}]</small> <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></li>
